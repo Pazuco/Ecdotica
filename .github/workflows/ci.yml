@@ -1,0 +1,32 @@
+name: Ecdotica CI
+
+on:
+  push:
+    branches: [ main, mejoras-editorial-nuevo-milenio ]
+  pull_request:
+    branches: [ main, mejoras-editorial-nuevo-milenio ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install spacy language-tool-python PyPDF2 python-docx
+        python -m spacy download es_core_news_sm
+    - name: Run basic static checks
+      run: |
+        python -m compileall src
+    - name: Run sample NLP analysis (quick check)
+      run: |
+        python -c "from procesamiento import nlp; nlp.analizar_texto_ejemplo()"
+      working-directory: ./src
+    # Aquí se pueden agregar tests automatizados en el futuro
+    # - name: Run tests
+    #   run: pytest tests/
