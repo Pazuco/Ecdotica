@@ -18,8 +18,11 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install spacy language-tool-python PyPDF2 python-docx
+        pip install spacy language-tool-python PyPDF2 python-docx flake8
         python -m spacy download es_core_news_sm
+    - name: Run linting (flake8)
+      run: |
+        flake8 src --max-line-length=100 --ignore=E501
     - name: Run basic static checks
       run: |
         python -m compileall src
