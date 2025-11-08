@@ -13,9 +13,9 @@ Las reglas pueden incluir:
 Ejemplo de cómo agregar una regla:
 
 def validar_estructura_argumentativa(texto):
-    \"\"\"
+    """
     Valida que el ensayo tenga una estructura argumentativa adecuada.
-    \"\"\"
+    """
     # Implementar lógica de validación
     pass
 
