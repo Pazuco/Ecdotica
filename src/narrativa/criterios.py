@@ -1,25 +1,25 @@
-# Reglas específicas para el procesamiento de novelas
+# Reglas específicas para el procesamiento de cuentos
 
 """
-Este módulo contiene las reglas específicas para el análisis y edición de novelas.
+Este módulo contiene las reglas específicas para el análisis y edición de cuentos.
 
 Las reglas pueden incluir:
-- Validación de estructura narrativa (capítulos, secciones)
-- Reglas de estilo específicas del género novelesco
-- Control de extensión y densidad de párrafos
-- Análisis de diálogos y narración
-- Consistencia de personajes y trama
+- Validación de estructura narrativa (inicio, desarrollo, clímax, desenlace)
+- Reglas de estilo específicas del género cuentistico
+- Control de extensión y concisión narrativa
+- Análisis de impacto y efectividad del final
+- Coherencia temática y unidad de efecto
 
 Ejemplo de cómo agregar una regla:
 
-def validar_longitud_capitulo(texto):
+def validar_unidad_temporal(texto):
     """
-    Valida que los capítulos tengan una longitud adecuada.
+    Valida que el cuento mantenga unidad temporal adecuada.
     """
     # Implementar lógica de validación
     pass
 
-class ReglaNovelistica:
+class ReglaCuentistica:
     def __init__(self, nombre, descripcion, funcion_validacion):
         self.nombre = nombre
         self.descripcion = descripcion
