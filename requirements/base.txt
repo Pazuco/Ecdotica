@@ -1,0 +1,47 @@
+# Dependencias Base - Ecdotica 2.0
+
+# FastAPI y servidor
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Base de datos
+SQLAlchemy==2.0.23
+alembic==1.12.1
+psycopg2-binary==2.9.9
+
+# Validación y serialización
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# Caché y tareas asíncronas
+redis==5.0.1
+hiredis==2.2.3
+aioredis==2.0.1
+
+# Seguridad y autenticación
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+
+# NLP y procesamiento de texto
+spacy==3.7.2
+es-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/es_core_news_sm-3.7.0/es_core_news_sm-3.7.0-py3-none-any.whl
+language-tool-python==2.7.1
+
+# Procesamiento de documentos
+python-docx==1.1.0
+PyPDF2==3.0.1
+openpyxl==3.1.2
+
+# Utilidades
+python-dotenv==1.0.0
+pydantic-core==2.14.1
+email-validator==2.1.0
+
+# Cliente HTTP
+httpx==0.25.1
+requests==2.31.0
+
+# Logging y monitoreo
+loguru==0.7.2
