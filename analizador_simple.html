@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecdotica Analyzer - Editorial Nuevo Milenio</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+    header h1 { font-size: 2.5em; margin-bottom: 10px; }
+    .content { padding: 40px; }
+    .form-group { margin-bottom: 20px; }
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+    textarea { min-height: 300px; resize: vertical; }
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 40px;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1em;
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.2s;
+    }
+    button:hover { transform: scale(1.02); }
+    #resultado {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 15px;
+      display: none;
+    }
+    .stat {
+      padding: 15px;
+      margin: 8px 0;
+      background: white;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+    .stat strong { color: #667eea; }
+    h2 { color: #333; margin: 20px 0 15px 0; }
+    h3 { color: #667eea; margin: 15px 0 10px 0; }
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #999;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📚 Ecdotica Analyzer</h1>
+      <p>Análisis Literario - Editorial Nuevo Milenio</p>
+    </header>
+    <div class="content">
+      <form id="form">
+        <div class="form-group">
+          <label>Nombre del libro:</label>
+          <input type="text" id="nombre" placeholder="Ej: Mis Santos y Mis Muertos" required>
+        </div>
+        <div class="form-group">
+          <label>Texto a analizar:</label>
+          <textarea id="texto" placeholder="Pegue aquí el texto del libro..." required></textarea>
+        </div>
+        <button type="submit">🔍 Analizar</button>
+      </form>
+      <div id="resultado"></div>
+    </div>
+    <footer>© 2025 Editorial Nuevo Milenio - Ecdotica</footer>
+  </div>
+  <script>
+    document.getElementById('form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const nombre = document.getElementById('nombre').value;
+      const texto = document.getElementById('texto').value;
+      
+      if (texto.length < 100) {
+        alert('El texto debe tener al menos 100 caracteres');
+        return;
+      }
+      
+      // Análisis del texto
+      const analisis = analizarTexto(texto, nombre);
+      mostrarResultados(analisis);
+    });
+    
+    function analizarTexto(texto, nombre) {
+      const lineas = texto.split('\n');
+      const palabras = texto.split(/\s+/).filter(p => p.length > 0);
+      const oraciones = texto.split(/[.!?]+/).filter(o => o.trim().length > 0);
+      
+      // Frecuencia de palabras
+      const frecuenciaPalabras = {};
+      palabras.forEach(palabra => {
+        const limpia = palabra.toLowerCase().replace(/[^a-záéíóúñü]/g, '');
+        if (limpia.length > 3) {
+          frecuenciaPalabras[limpia] = (frecuenciaPalabras[limpia] || 0) + 1;
+        }
+      });
+      
+      // Top palabras
+      const topPalabras = Object.entries(frecuenciaPalabras)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 15);
+      
+      const palabrasUnicas = Object.keys(frecuenciaPalabras).length;
+      const promedioPalabrasOracion = oraciones.length > 0 
+        ? (palabras.length / oraciones.length).toFixed(1)
+        : 0;
+      
+      // Recomendaciones
+      const recomendaciones = [];
+      if (palabras.length < 10000) {
+        recomendaciones.push('⚠️ Texto breve - Considere expandir el contenido');
+      } else if (palabras.length > 100000) {
+        recomendaciones.push('✅ Extensión adecuada para una novela');
+      } else {
+        recomendaciones.push('✅ Extensión apropiada para un cuento o novela corta');
+      }
+      
+      const promedio = palabras.length / oraciones.length;
+      if (promedio < 10) {
+        recomendaciones.push('📝 Estilo directo con oraciones cortas');
+      } else if (promedio > 20) {
+        recomendaciones.push('📝 Estilo elaborado con oraciones complejas');
+      } else {
+        recomendaciones.push('📝 Estilo balanceado');
+      }
+      
+      return {
+        nombre,
+        caracteres: texto.length,
+        caracteresSinEspacios: texto.replace(/\s/g, '').length,
+        palabras: palabras.length,
+        palabrasUnicas,
+        oraciones: oraciones.length,
+        lineas: lineas.length,
+        promedioPalabrasOracion: parseFloat(promedioPalabrasOracion),
+        topPalabras,
+        recomendaciones
+      };
+    }
+    
+    function mostrarResultados(analisis) {
+      let html = '<h2>📊 Resultados del Análisis: ' + analisis.nombre + '</h2>';
+      
+      html += '<h3>Estadísticas Generales</h3>';
+      html += `<div class="stat"><strong>Caracteres:</strong> ${analisis.caracteres.toLocaleString()}</div>`;
+      html += `<div class="stat"><strong>Caracteres sin espacios:</strong> ${analisis.caracteresSinEspacios.toLocaleString()}</div>`;
+      html += `<div class="stat"><strong>Palabras:</strong> ${analisis.palabras.toLocaleString()}</div>`;
+      html += `<div class="stat"><strong>Palabras únicas:</strong> ${analisis.palabrasUnicas.toLocaleString()}</div>`;
+      html += `<div class="stat"><strong>Oraciones:</strong> ${analisis.oraciones.toLocaleString()}</div>`;
+      html += `<div class="stat"><strong>Líneas:</strong> ${analisis.lineas.toLocaleString()}</div>`;
+      html += `<div class="stat"><strong>Promedio palabras/oración:</strong> ${analisis.promedioPalabrasOracion}</div>`;
+      
+      html += '<h3>🔤 Palabras Más Frecuentes</h3>';
+      analisis.topPalabras.forEach(([palabra, freq]) => {
+        html += `<div class="stat">${palabra}: <strong>${freq} veces</strong></div>`;
+      });
+      
+      html += '<h3>💡 Recomendaciones Editoriales</h3>';
+      analisis.recomendaciones.forEach(r => {
+        html += `<div class="stat">${r}</div>`;
+      });
+      
+      document.getElementById('resultado').innerHTML = html;
+      document.getElementById('resultado').style.display = 'block';
+      document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
