@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: ecdotica_postgres
+    environment:
+      POSTGRES_DB: ecdotica_db
+      POSTGRES_USER: ecdotica_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - ecdotica_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ecdotica_user -d ecdotica_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: ecdotica_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ecdotica_network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: ecdotica_backend
+    environment:
+      DATABASE_URL: postgresql://ecdotica_user:${POSTGRES_PASSWORD:-changeme}@postgres:5432/ecdotica_db
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-key-change-in-production}
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app/backend
+      - ./src:/app/src
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ecdotica_network
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend Desktop App (development)
+  # Note: For production, this would be a standalone executable
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: ecdotica_frontend
+    environment:
+      API_URL: http://backend:8000
+      DISPLAY: ${DISPLAY:-:0}
+    volumes:
+      - ./frontend:/app/frontend
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    depends_on:
+      - backend
+    networks:
+      - ecdotica_network
+    # This is for development only
+    # command: python frontend/main.py
+
+  # PgAdmin (Optional - for database management)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ecdotica_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@ecdotica.local
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - ecdotica_network
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  ecdotica_network:
+    driver: bridge
