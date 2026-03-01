@@ -1,5 +1,5 @@
 """
-Módulo de criterios editoriales para cuento.
+Módulo de criterios editoriales para crónica.
 Editorial Nuevo Milenio
 """
 
@@ -17,13 +17,13 @@ def evaluar_ortografia_gramatica(stats):
 
 
 def evaluar_longitud(stats):
-    """Evalúa el rango de palabras del cuento. Entre 1,000 y 30,000 palabras."""
+    """Evalúa el rango de palabras de la crónica. Entre 500 y 15,000 palabras."""
     palabras = stats.get('num_palabras', 0)
-    cumple = 1000 <= palabras <= 30000
-    if palabras < 1000:
-        mensaje = f'El cuento tiene {palabras} palabras. Mínimo requerido: 1,000'
-    elif palabras > 30000:
-        mensaje = f'El cuento tiene {palabras} palabras. Máximo recomendado: 30,000'
+    cumple = 500 <= palabras <= 15000
+    if palabras < 500:
+        mensaje = f'La crónica tiene {palabras} palabras. Mínimo requerido: 500'
+    elif palabras > 15000:
+        mensaje = f'La crónica tiene {palabras} palabras. Máximo recomendado: 15,000'
     else:
         mensaje = f'Longitud adecuada: {palabras} palabras'
     return {
@@ -34,18 +34,18 @@ def evaluar_longitud(stats):
 
 
 def evaluar_estructura(stats):
-    """El cuento puede ser texto único, no requiere capítulos obligatoriamente."""
+    """La crónica puede presentarse como texto continuo sin capítulos."""
     return {
         'cumple': True,
-        'mensaje': 'El cuento no requiere estructura de capítulos'
+        'mensaje': 'La crónica no requiere estructura de capítulos'
     }
 
 
 def evaluar_legibilidad(stats):
-    """Evalúa el índice de legibilidad. Debe ser al menos 60."""
+    """Evalúa el índice de legibilidad. Mínimo recomendado: 55 (estilo periodístico, accesible)."""
     indice = stats.get('indice_legibilidad', 100)
-    cumple = indice >= 60
-    mensaje = f'Índice de legibilidad: {indice:.2f}. Mínimo recomendado: 60'
+    cumple = indice >= 55
+    mensaje = f'Índice de legibilidad: {indice:.2f}. Mínimo recomendado: 55'
     return {
         'cumple': cumple,
         'indice': indice,
@@ -53,7 +53,7 @@ def evaluar_legibilidad(stats):
     }
 
 
-def evaluar_cuento(stats):
+def evaluar_cronica(stats):
     """Evalúa todos los criterios y devuelve dict con resultados detallados."""
     return {
         'ortografia_gramatica': evaluar_ortografia_gramatica(stats),

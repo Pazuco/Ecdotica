@@ -1,0 +1,13 @@
+# Procesamiento de lenguaje natural
+spacy>=3.0.0
+# Modelo de español: python -m spacy download es_core_news_sm
+
+# Revisión ortográfica y gramatical
+language-tool-python>=2.7.0
+
+# Procesamiento de documentos
+PyPDF2>=3.0.0
+python-docx>=0.8.11
+
+# Testing
+pytest>=7.0.0
