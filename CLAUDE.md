@@ -310,3 +310,27 @@ When adding tests for new genres or functions, follow the class-per-module patte
 ## Sample Data
 
 `src/samples/sample.txt` contains *"Amor sin libertad"* by Yuri Ortuño León, used for demonstrating NLP analysis in `archivos.py`. Do not delete or modify it — it is the reference input for `analizar_texto_ejemplo()`.
+
+---
+
+## User Working Preferences
+
+These preferences govern how Claude should behave during this project's sessions.
+
+### Process
+
+- **Always ask clarifying questions** before starting non-trivial tasks.
+- **Show the plan** before executing any significant change.
+- **Save outputs as Markdown (`.md`)** unless the user specifies otherwise.
+
+### Output Style
+
+- **Detail level:** Detailed — provide full explanations, reasoning, and context in responses.
+- **Formatting:** Use GitHub-flavoured Markdown (headings, tables, code blocks, bullet lists).
+- **File naming:** No fixed convention — use whatever best fits the context (consistent with surrounding files or the task at hand).
+
+### Guardrails
+
+- **Never delete files** without explicit confirmation from the user.
+- **Never modify files** outside the designated output folder or scope of the current task.
+- **Flag assumptions explicitly** before acting on them — state what is assumed and why.
