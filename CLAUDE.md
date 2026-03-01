@@ -139,9 +139,9 @@ Each genre module exports a single `evaluar_<genero>(stats)` function returning 
 |---|---|---|---|---|
 | `novela` | 30,000–150,000 | ≥ 3 required | < 10 per 10,000 words | ≥ 50 |
 | `cuento` | 1,000–30,000 | Not required | < 5 per 5,000 words | ≥ 60 |
-| `poema` | Not implemented | — | — | — |
-| `ensayo` | Not implemented | — | — | — |
-| `cronica` | Not implemented | — | — | — |
+| `poema` | 5–2,000 | Not required | < 5 per 1,000 words | ≥ 30 |
+| `ensayo` | 1,500–30,000 | Not required | < 3 per 10,000 words | ≥ 40 |
+| `cronica` | 500–15,000 | Not required | < 5 per 5,000 words | ≥ 55 |
 
 ---
 
@@ -282,25 +282,28 @@ To add a new genre (e.g., `poema`):
 
 ## Testing
 
-**There is currently no test suite.** No pytest, unittest, or CI/CD configuration exists.
+Run the test suite from the project root:
 
-When adding tests:
-- Use `pytest`
-- Place test files as `test_<module>.py` alongside source modules or in a top-level `tests/` directory
-- Follow the pattern: `test_<genero>.py` per genre module (per CONTRIBUTING.md structure)
+```bash
+pytest tests/ -v
+```
+
+**Test files:**
+- `tests/conftest.py` — adds `src/procesamiento` to `sys.path` so tests can import modules directly
+- `tests/test_utils.py` — tests for `contar_palabras`, `contar_capitulos`, `calcular_legibilidad`, `analizar_manuscrito`
+- `tests/test_criterios.py` — tests for all five genre evaluation modules (novela, cuento, poema, ensayo, cronica)
+
+When adding tests for new genres or functions, follow the class-per-module pattern in `test_criterios.py`.
 
 ---
 
 ## What Does Not Exist Yet
 
-- `requirements.txt` / `setup.py` / `pyproject.toml`
-- Test suite
+- `setup.py` / `pyproject.toml` (formal package definition)
 - CI/CD (no `.github/workflows/`)
 - Docker / deployment configuration
 - Environment variable / `.env` management
-- API / web interface (CLI only)
-- Implemented criteria for `poema`, `ensayo`, `cronica`
-- Real error detection (currently hardcoded stub in `utils.py:detectar_errores`)
+- API / web interface (CLI only via `main.py`)
 
 ---
 

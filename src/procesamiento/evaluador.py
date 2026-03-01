@@ -3,12 +3,15 @@ Pipeline central para evaluación editorial automatizada.
 Editorial Nuevo Milenio
 """
 
-from criterios import novela, cuento
+from criterios import novela, cuento, poema, ensayo, cronica
 from utils import analizar_manuscrito
 
 GENERO_CRITERIOS = {
     'novela': novela.evaluar_novela,
     'cuento': cuento.evaluar_cuento,
+    'poema': poema.evaluar_poema,
+    'ensayo': ensayo.evaluar_ensayo,
+    'cronica': cronica.evaluar_cronica,
 }
 
 
