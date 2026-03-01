@@ -78,10 +78,6 @@ class ProcesadorDeArchivos:
 # para analizar el texto de muestra 'Amor sin libertad' de Yuri Ortuño,
 # siguiendo los ejemplos incluidos en CONTRIBUTING.md
 
-import spacy
-import language_tool_python
-
-
 def analizar_texto_ejemplo():
     """
     Función de ejemplo que analiza el texto 'Amor sin libertad' de Yuri Ortuño
@@ -91,11 +87,14 @@ def analizar_texto_ejemplo():
     que se pueden aplicar en el proyecto Ecdotica.
     """
     
+    import spacy
+    import language_tool_python
+
     # Cargar el modelo de SpaCy para español
     # Nota: Requiere instalar el modelo con: python -m spacy download es_core_news_sm
     print("Cargando modelo de SpaCy para español...")
     nlp = spacy.load("es_core_news_sm")
-    
+
     # Inicializar LanguageTool para español
     print("Inicializando LanguageTool...")
     tool = language_tool_python.LanguageTool('es')
@@ -205,6 +204,8 @@ def obtener_estadisticas_texto(ruta_archivo):
         with open(ruta_archivo, 'r', encoding='utf-8') as f:
             texto = f.read()
         
+        import spacy
+
         # Cargar modelo de SpaCy
         nlp = spacy.load("es_core_news_sm")
         doc = nlp(texto)
