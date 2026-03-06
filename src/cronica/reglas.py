@@ -13,9 +13,9 @@ Las reglas pueden incluir:
 Ejemplo de cómo agregar una regla:
 
 def validar_equilibrio_narrativo(texto):
-    \"\"\"
+    """
     Valida el equilibrio entre narración y periodismo en la crónica.
-    \"\"\"
+    """
     # Implementar lógica de validación
     pass
 
