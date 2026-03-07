@@ -3,11 +3,18 @@ Ecdotica 2.0 - FastAPI Backend Principal
 Editor de texto especializado en edición crítica digital
 """
 
+import sys
+import os
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 import uvicorn
 from loguru import logger
+
+# Agregar src al path para importar el pipeline de análisis
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 # Configurar logging
 logger.add("logs/ecdotica.log", rotation="500 MB")
@@ -79,6 +86,64 @@ async def api_info():
             "Editor inteligente"
         ]
     }
+
+
+class SolicitudAnalisis(BaseModel):
+    texto: str
+    genero: str
+
+
+@app.post("/api/v1/analizar")
+async def analizar_manuscrito(solicitud: SolicitudAnalisis):
+    """
+    Analiza un manuscrito según el género indicado y devuelve estadísticas
+    y resultados de evaluación editorial.
+
+    Géneros válidos: novela, cuento, poema, ensayo, cronica
+    """
+    generos_validos = {'novela', 'cuento', 'poema', 'ensayo', 'cronica'}
+    if solicitud.genero not in generos_validos:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Género no válido: '{solicitud.genero}'. Válidos: {sorted(generos_validos)}"
+        )
+
+    if len(solicitud.texto.strip()) < 50:
+        raise HTTPException(
+            status_code=400,
+            detail="El texto debe tener al menos 50 caracteres."
+        )
+
+    try:
+        from procesamiento.utils import (
+            contar_palabras,
+            contar_capitulos,
+            calcular_legibilidad,
+            detectar_errores,
+        )
+        from procesamiento.evaluador import evaluar_manuscrito
+
+        stats = {
+            'num_palabras': contar_palabras(solicitud.texto),
+            'num_capitulos': contar_capitulos(solicitud.texto),
+            'indice_legibilidad': calcular_legibilidad(solicitud.texto),
+            'errores_graves': detectar_errores(solicitud.texto),
+        }
+
+        resultados = evaluar_manuscrito(stats, solicitud.genero)
+
+        return {
+            "status": "ok",
+            "genero": solicitud.genero,
+            "stats": stats,
+            "resultados": resultados,
+        }
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error en análisis de manuscrito: {e}")
+        raise HTTPException(status_code=500, detail="Error interno durante el análisis.")
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ecdotica Analyzer - Editorial Nuevo Milenio</title>
+  <title>Analizador de Manuscritos — Ecdótica</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -26,8 +26,40 @@
       padding: 40px;
       text-align: center;
     }
-    header h1 { font-size: 2.5em; margin-bottom: 10px; }
+    header h1 { font-size: 2.2em; margin-bottom: 10px; }
+    header p { font-size: 1.1em; opacity: 0.9; }
     .content { padding: 40px; }
+
+    /* Género selector */
+    .genero-label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .generos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .genero-btn {
+      padding: 8px 20px;
+      border: 2px solid #667eea;
+      border-radius: 50px;
+      background: white;
+      color: #667eea;
+      font-size: 0.95em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .genero-btn:hover { background: #f0f0ff; }
+    .genero-btn.activo {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-color: transparent;
+    }
+
     .form-group { margin-bottom: 20px; }
     label {
       display: block;
@@ -35,16 +67,22 @@
       margin-bottom: 8px;
       color: #333;
     }
-    input, textarea {
+    textarea {
       width: 100%;
       padding: 12px;
       border: 2px solid #e0e0e0;
       border-radius: 8px;
       font-family: inherit;
       font-size: 14px;
+      transition: border-color 0.2s;
+      min-height: 250px;
+      resize: vertical;
     }
-    textarea { min-height: 300px; resize: vertical; }
-    button {
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    button[type="submit"] {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       padding: 15px 40px;
@@ -53,156 +91,347 @@
       font-size: 1.1em;
       cursor: pointer;
       width: 100%;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    button[type="submit"]:hover { transform: scale(1.02); opacity: 0.95; }
+
+    /* Resultados */
+    #resultado { margin-top: 30px; display: none; }
+
+    .veredicto {
+      text-align: center;
+      padding: 30px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+    }
+    .veredicto.apto {
+      background: linear-gradient(135deg, #d4edda, #c3e6cb);
+      border: 2px solid #28a745;
+    }
+    .veredicto.no-apto {
+      background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+      border: 2px solid #dc3545;
+    }
+    .veredicto .badge {
+      display: inline-block;
+      font-size: 1.8em;
+      font-weight: 700;
+      padding: 10px 30px;
+      border-radius: 50px;
+      margin-bottom: 10px;
+    }
+    .veredicto.apto .badge { background: #28a745; color: white; }
+    .veredicto.no-apto .badge { background: #dc3545; color: white; }
+    .veredicto p { font-size: 1em; color: #555; margin-top: 8px; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    .stat-card {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      border-top: 3px solid #667eea;
+    }
+    .stat-card .valor {
+      font-size: 1.8em;
+      font-weight: 700;
+      color: #667eea;
+    }
+    .stat-card .etiqueta {
+      font-size: 0.85em;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .criterios-lista { margin-bottom: 25px; }
+    .criterios-lista h3 {
+      color: #333;
+      margin-bottom: 12px;
+      font-size: 1.1em;
+    }
+    .criterio {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      background: #f8f9fa;
+    }
+    .criterio.cumple { border-left: 4px solid #28a745; }
+    .criterio.no-cumple { border-left: 4px solid #dc3545; }
+    .criterio .icono { font-size: 1.1em; flex-shrink: 0; margin-top: 1px; }
+    .criterio .texto { font-size: 0.9em; color: #444; }
+
+    .legibilidad-barra {
+      background: #e9ecef;
+      border-radius: 50px;
+      height: 12px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .legibilidad-barra .relleno {
+      height: 100%;
+      border-radius: 50px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transition: width 0.8s ease;
+    }
+
+    /* CTA */
+    .cta {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 15px;
+      padding: 30px;
+      text-align: center;
+      margin-top: 25px;
+    }
+    .cta h3 { font-size: 1.4em; margin-bottom: 10px; }
+    .cta p { opacity: 0.9; margin-bottom: 20px; font-size: 0.95em; }
+    .cta a {
+      display: inline-block;
+      background: white;
+      color: #667eea;
+      font-weight: 700;
+      padding: 14px 35px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-size: 1em;
       transition: transform 0.2s;
     }
-    button:hover { transform: scale(1.02); }
-    #resultado {
-      margin-top: 30px;
-      padding: 20px;
-      background: #f8f9fa;
-      border-radius: 15px;
-      display: none;
-    }
-    .stat {
-      padding: 15px;
-      margin: 8px 0;
-      background: white;
-      border-radius: 8px;
-      border-left: 4px solid #667eea;
-    }
-    .stat strong { color: #667eea; }
-    h2 { color: #333; margin: 20px 0 15px 0; }
-    h3 { color: #667eea; margin: 15px 0 10px 0; }
+    .cta a:hover { transform: scale(1.04); }
+    .cta .nota { font-size: 0.8em; opacity: 0.75; margin-top: 12px; }
+
     footer {
       text-align: center;
       padding: 20px;
       color: #999;
-      font-size: 0.9em;
+      font-size: 0.85em;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 25px 20px; }
+      header h1 { font-size: 1.6em; }
+      .content { padding: 20px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>📚 Ecdotica Analyzer</h1>
-      <p>Análisis Literario - Editorial Nuevo Milenio</p>
+      <h1>Analizador de Manuscritos</h1>
+      <p>Pega tu texto y descubre en segundos si cumple los criterios editoriales profesionales</p>
     </header>
     <div class="content">
       <form id="form">
         <div class="form-group">
-          <label>Nombre del libro:</label>
-          <input type="text" id="nombre" placeholder="Ej: Mis Santos y Mis Muertos" required>
+          <span class="genero-label">¿Qué tipo de texto es?</span>
+          <div class="generos">
+            <button type="button" class="genero-btn activo" data-genero="novela">Novela</button>
+            <button type="button" class="genero-btn" data-genero="cuento">Cuento</button>
+            <button type="button" class="genero-btn" data-genero="poema">Poema</button>
+            <button type="button" class="genero-btn" data-genero="ensayo">Ensayo</button>
+            <button type="button" class="genero-btn" data-genero="cronica">Crónica</button>
+          </div>
         </div>
         <div class="form-group">
-          <label>Texto a analizar:</label>
-          <textarea id="texto" placeholder="Pegue aquí el texto del libro..." required></textarea>
+          <label for="texto">Pega aquí tu texto:</label>
+          <textarea id="texto" placeholder="Copia y pega un fragmento o el texto completo de tu manuscrito..." required></textarea>
         </div>
-        <button type="submit">🔍 Analizar</button>
+        <button type="submit">Analizar mi manuscrito →</button>
       </form>
       <div id="resultado"></div>
     </div>
-    <footer>© 2025 Editorial Nuevo Milenio - Ecdotica</footer>
+    <footer>© 2025 Ecdótica · Editorial Nuevo Milenio</footer>
   </div>
+
   <script>
-    document.getElementById('form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      const nombre = document.getElementById('nombre').value;
-      const texto = document.getElementById('texto').value;
-      
-      if (texto.length < 100) {
-        alert('El texto debe tener al menos 100 caracteres');
-        return;
-      }
-      
-      // Análisis del texto
-      const analisis = analizarTexto(texto, nombre);
-      mostrarResultados(analisis);
-    });
-    
-    function analizarTexto(texto, nombre) {
-      const lineas = texto.split('\n');
-      const palabras = texto.split(/\s+/).filter(p => p.length > 0);
-      const oraciones = texto.split(/[.!?]+/).filter(o => o.trim().length > 0);
-      
-      // Frecuencia de palabras
-      const frecuenciaPalabras = {};
-      palabras.forEach(palabra => {
-        const limpia = palabra.toLowerCase().replace(/[^a-záéíóúñü]/g, '');
-        if (limpia.length > 3) {
-          frecuenciaPalabras[limpia] = (frecuenciaPalabras[limpia] || 0) + 1;
-        }
+    // --- Criterios por género (fuente: criterios reales de evaluación editorial) ---
+    const CRITERIOS = {
+      novela:  { min: 30000,  max: 150000, capitulos: 3, legibilidad: 50,  nombre: 'Novela' },
+      cuento:  { min: 1000,   max: 30000,  capitulos: 0, legibilidad: 60,  nombre: 'Cuento' },
+      poema:   { min: 5,      max: 2000,   capitulos: 0, legibilidad: 30,  nombre: 'Poema' },
+      ensayo:  { min: 1500,   max: 30000,  capitulos: 0, legibilidad: 40,  nombre: 'Ensayo' },
+      cronica: { min: 500,    max: 15000,  capitulos: 0, legibilidad: 55,  nombre: 'Crónica' },
+    };
+
+    let generoActivo = 'novela';
+
+    // Selector de género
+    document.querySelectorAll('.genero-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.genero-btn').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        generoActivo = btn.dataset.genero;
       });
-      
-      // Top palabras
-      const topPalabras = Object.entries(frecuenciaPalabras)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 15);
-      
-      const palabrasUnicas = Object.keys(frecuenciaPalabras).length;
-      const promedioPalabrasOracion = oraciones.length > 0 
-        ? (palabras.length / oraciones.length).toFixed(1)
-        : 0;
-      
-      // Recomendaciones
-      const recomendaciones = [];
-      if (palabras.length < 10000) {
-        recomendaciones.push('⚠️ Texto breve - Considere expandir el contenido');
-      } else if (palabras.length > 100000) {
-        recomendaciones.push('✅ Extensión adecuada para una novela');
-      } else {
-        recomendaciones.push('✅ Extensión apropiada para un cuento o novela corta');
+    });
+
+    // --- Funciones de análisis (equivalentes al pipeline Python) ---
+
+    function contarPalabras(texto) {
+      return (texto.match(/\w+/g) || []).length;
+    }
+
+    function detectarCapitulos(texto) {
+      return (texto.match(/^cap[ií]tulo\s+\w+/gim) || []).length;
+    }
+
+    function calcularLegibilidad(texto) {
+      const palabras = texto.match(/\w+/g) || [];
+      const oraciones = texto.split(/[.!?]+/).filter(o => o.trim().length > 0);
+      if (!oraciones.length || !palabras.length) return 0;
+      // Aproximación de sílabas por longitud — adaptación Flesch-Kincaid para español
+      const silabas = palabras.reduce((sum, p) => sum + Math.floor(p.length / 3) + 1, 0);
+      const promPalabras = palabras.length / oraciones.length;
+      const promSilabas = silabas / palabras.length;
+      const indice = 206.835 - (1.015 * promPalabras) - (84.6 * promSilabas);
+      return Math.max(0, Math.min(100, indice));
+    }
+
+    function calcularRiquezaLexica(texto) {
+      const palabras = (texto.match(/\w+/g) || []).map(p => p.toLowerCase());
+      const unicas = new Set(palabras);
+      return palabras.length > 0 ? Math.round((unicas.size / palabras.length) * 100) : 0;
+    }
+
+    function evaluar(texto, genero) {
+      const c = CRITERIOS[genero];
+      const numPalabras = contarPalabras(texto);
+      const numCapitulos = detectarCapitulos(texto);
+      const legibilidad = calcularLegibilidad(texto);
+      const riqueza = calcularRiquezaLexica(texto);
+
+      const criterios = [];
+
+      // Extensión
+      criterios.push({
+        cumple: numPalabras >= c.min && numPalabras <= c.max,
+        texto: `Extensión: ${numPalabras.toLocaleString()} palabras (requiere entre ${c.min.toLocaleString()} y ${c.max.toLocaleString()})`,
+      });
+
+      // Capítulos (solo para novela)
+      if (c.capitulos > 0) {
+        criterios.push({
+          cumple: numCapitulos >= c.capitulos,
+          texto: `Estructura por capítulos: ${numCapitulos} detectados (mínimo ${c.capitulos})`,
+        });
       }
-      
-      const promedio = palabras.length / oraciones.length;
-      if (promedio < 10) {
-        recomendaciones.push('📝 Estilo directo con oraciones cortas');
-      } else if (promedio > 20) {
-        recomendaciones.push('📝 Estilo elaborado con oraciones complejas');
-      } else {
-        recomendaciones.push('📝 Estilo balanceado');
-      }
-      
+
+      // Legibilidad
+      criterios.push({
+        cumple: legibilidad >= c.legibilidad,
+        texto: `Índice de legibilidad: ${legibilidad.toFixed(0)}/100 (mínimo ${c.legibilidad} para ${c.nombre})`,
+      });
+
       return {
-        nombre,
-        caracteres: texto.length,
-        caracteresSinEspacios: texto.replace(/\s/g, '').length,
-        palabras: palabras.length,
-        palabrasUnicas,
-        oraciones: oraciones.length,
-        lineas: lineas.length,
-        promedioPalabrasOracion: parseFloat(promedioPalabrasOracion),
-        topPalabras,
-        recomendaciones
+        numPalabras,
+        numCapitulos,
+        legibilidad,
+        riqueza,
+        criterios,
+        cumpleTodo: criterios.every(cr => cr.cumple),
       };
     }
-    
-    function mostrarResultados(analisis) {
-      let html = '<h2>📊 Resultados del Análisis: ' + analisis.nombre + '</h2>';
-      
-      html += '<h3>Estadísticas Generales</h3>';
-      html += `<div class="stat"><strong>Caracteres:</strong> ${analisis.caracteres.toLocaleString()}</div>`;
-      html += `<div class="stat"><strong>Caracteres sin espacios:</strong> ${analisis.caracteresSinEspacios.toLocaleString()}</div>`;
-      html += `<div class="stat"><strong>Palabras:</strong> ${analisis.palabras.toLocaleString()}</div>`;
-      html += `<div class="stat"><strong>Palabras únicas:</strong> ${analisis.palabrasUnicas.toLocaleString()}</div>`;
-      html += `<div class="stat"><strong>Oraciones:</strong> ${analisis.oraciones.toLocaleString()}</div>`;
-      html += `<div class="stat"><strong>Líneas:</strong> ${analisis.lineas.toLocaleString()}</div>`;
-      html += `<div class="stat"><strong>Promedio palabras/oración:</strong> ${analisis.promedioPalabrasOracion}</div>`;
-      
-      html += '<h3>🔤 Palabras Más Frecuentes</h3>';
-      analisis.topPalabras.forEach(([palabra, freq]) => {
-        html += `<div class="stat">${palabra}: <strong>${freq} veces</strong></div>`;
+
+    function mostrarResultados(r, genero) {
+      const c = CRITERIOS[genero];
+      const texto = document.getElementById('texto').value;
+      const oraciones = texto.split(/[.!?]+/).filter(o => o.trim().length > 0).length;
+
+      let html = '';
+
+      // Veredicto principal
+      const esApto = r.cumpleTodo;
+      html += `
+        <div class="veredicto ${esApto ? 'apto' : 'no-apto'}">
+          <div class="badge">${esApto ? '✓ APTO' : '✗ NO APTO'}</div>
+          <p>${esApto
+            ? `Tu ${c.nombre.toLowerCase()} cumple los criterios editoriales de Ecdótica.`
+            : `Tu ${c.nombre.toLowerCase()} aún no cumple todos los criterios. Revisa los detalles abajo.`
+          }</p>
+        </div>`;
+
+      // Estadísticas
+      html += `
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="valor">${r.numPalabras.toLocaleString()}</div>
+            <div class="etiqueta">Palabras</div>
+          </div>
+          <div class="stat-card">
+            <div class="valor">${oraciones.toLocaleString()}</div>
+            <div class="etiqueta">Oraciones</div>
+          </div>
+          <div class="stat-card">
+            <div class="valor">${r.numCapitulos}</div>
+            <div class="etiqueta">Capítulos detectados</div>
+          </div>
+          <div class="stat-card">
+            <div class="valor">${r.riqueza}%</div>
+            <div class="etiqueta">Riqueza léxica</div>
+          </div>
+        </div>`;
+
+      // Barra de legibilidad
+      const nivelLegibilidad = r.legibilidad >= 70 ? 'Fácil' : r.legibilidad >= 50 ? 'Moderado' : 'Complejo';
+      html += `
+        <div style="margin-bottom:25px; background:#f8f9fa; border-radius:12px; padding:18px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <strong style="color:#333;">Índice de legibilidad</strong>
+            <span style="color:#667eea; font-weight:700;">${r.legibilidad.toFixed(0)}/100 — ${nivelLegibilidad}</span>
+          </div>
+          <div class="legibilidad-barra">
+            <div class="relleno" style="width:${r.legibilidad.toFixed(0)}%"></div>
+          </div>
+          <div style="font-size:0.8em; color:#888; margin-top:6px;">
+            Adaptación Flesch-Kincaid para español. Mínimo requerido para ${c.nombre}: ${c.legibilidad}/100.
+          </div>
+        </div>`;
+
+      // Criterios editoriales
+      html += `<div class="criterios-lista"><h3>Criterios editoriales (${c.nombre})</h3>`;
+      r.criterios.forEach(cr => {
+        html += `
+          <div class="criterio ${cr.cumple ? 'cumple' : 'no-cumple'}">
+            <span class="icono">${cr.cumple ? '✓' : '✗'}</span>
+            <span class="texto">${cr.texto}</span>
+          </div>`;
       });
-      
-      html += '<h3>💡 Recomendaciones Editoriales</h3>';
-      analisis.recomendaciones.forEach(r => {
-        html += `<div class="stat">${r}</div>`;
-      });
-      
+      html += `</div>`;
+
+      // CTA
+      html += `
+        <div class="cta">
+          <h3>¿Listo para el siguiente paso?</h3>
+          <p>
+            El análisis completo incluye detección de plagio, comparación con obras publicadas,
+            recomendaciones detalladas por capítulo y evaluación de estilo narrativo.
+          </p>
+          <a href="https://ecdotica.com" target="_blank">Comenzar prueba gratuita de 7 días →</a>
+          <div class="nota">Sin tarjeta de crédito &middot; Sin compromiso</div>
+        </div>`;
+
       document.getElementById('resultado').innerHTML = html;
       document.getElementById('resultado').style.display = 'block';
       document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
     }
+
+    document.getElementById('form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const texto = document.getElementById('texto').value.trim();
+      if (texto.length < 50) {
+        alert('El texto debe tener al menos 50 caracteres para analizarlo.');
+        return;
+      }
+      mostrarResultados(evaluar(texto, generoActivo), generoActivo);
+    });
   </script>
 </body>
 </html>
