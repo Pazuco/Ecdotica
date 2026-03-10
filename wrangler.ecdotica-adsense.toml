@@ -1,0 +1,8 @@
+name = "ecdotica-adsense"
+main = "worker/ecdotica-adsense.js"
+compatibility_date = "2024-11-20"
+
+[env.production]
+routes = [
+  { pattern = "ecdotica.com/*", zone_name = "ecdotica.com" }
+]

@@ -1,0 +1,8 @@
+name = "ecdotica-api"
+main = "worker/index.js"
+compatibility_date = "2024-11-20"
+
+# KV Namespace binding (plagiarism cache)
+# [[kv_namespaces]]
+# binding = "PLAGIARISM_CACHE"
+# id = "<TU_KV_NAMESPACE_ID>"
