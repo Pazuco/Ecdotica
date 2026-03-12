@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informes de Lectura — Ecdótica</title>
+    <style>
+        :root {
+            --fondo-principal: #1a1a2e;
+            --fondo-tarjeta: #16213e;
+            --fondo-input: #0f3460;
+            --dorado: #e2b04a;
+            --dorado-claro: #f0c674;
+            --dorado-oscuro: #c9952e;
+            --texto-claro: #e8e8e8;
+            --texto-secundario: #a0a0b8;
+            --borde: #2a2a4a;
+            --exito: #4ade80;
+            --error: #f87171;
+            --radio-borde: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--fondo-principal);
+            color: var(--texto-claro);
+            line-height: 1.6;
+        }
+
+        .contenedor-principal {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Encabezado */
+        .encabezado {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .encabezado h1 {
+            font-size: 2.2rem;
+            color: var(--dorado);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .encabezado p {
+            color: var(--texto-secundario);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Planes de precios */
+        .planes-contenedor {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .plan-tarjeta {
+            background: var(--fondo-tarjeta);
+            border: 1px solid var(--borde);
+            border-radius: var(--radio-borde);
+            padding: 1.5rem;
+            text-align: center;
+            transition: border-color 0.3s, transform 0.2s;
+        }
+
+        .plan-tarjeta:hover {
+            border-color: var(--dorado);
+            transform: translateY(-2px);
+        }
+
+        .plan-tarjeta.destacado {
+            border-color: var(--dorado);
+            position: relative;
+        }
+
+        .plan-tarjeta.destacado::before {
+            content: 'Popular';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dorado);
+            color: var(--fondo-principal);
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .plan-nombre {
+            font-size: 1.1rem;
+            color: var(--dorado-claro);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .plan-precio {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--texto-claro);
+            margin-bottom: 0.3rem;
+        }
+
+        .plan-precio small {
+            font-size: 0.85rem;
+            color: var(--texto-secundario);
+            font-weight: 400;
+        }
+
+        .plan-descripcion {
+            color: var(--texto-secundario);
+            font-size: 0.9rem;
+        }
+
+        /* Formulario */
+        .formulario-tarjeta {
+            background: var(--fondo-tarjeta);
+            border: 1px solid var(--borde);
+            border-radius: var(--radio-borde);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .formulario-tarjeta h2 {
+            color: var(--dorado);
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--borde);
+        }
+
+        .campo-grupo {
+            margin-bottom: 1.2rem;
+        }
+
+        .campo-grupo label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: var(--texto-secundario);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .campo-grupo label .requerido {
+            color: var(--dorado);
+        }
+
+        .campo-fila {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--fondo-input);
+            border: 1px solid var(--borde);
+            border-radius: 8px;
+            color: var(--texto-claro);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--dorado);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a0a0b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 2.5rem;
+        }
+
+        select option {
+            background: var(--fondo-input);
+            color: var(--texto-claro);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .boton-enviar {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, var(--dorado), var(--dorado-oscuro));
+            color: var(--fondo-principal);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.3s, transform 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        .boton-enviar:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .boton-enviar:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Progreso */
+        .progreso-contenedor {
+            display: none;
+            background: var(--fondo-tarjeta);
+            border: 1px solid var(--borde);
+            border-radius: var(--radio-borde);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .progreso-contenedor.visible {
+            display: block;
+        }
+
+        .progreso-titulo {
+            color: var(--dorado);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .barra-progreso {
+            width: 100%;
+            height: 8px;
+            background: var(--fondo-input);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+        }
+
+        .barra-progreso-relleno {
+            height: 100%;
+            background: linear-gradient(90deg, var(--dorado-oscuro), var(--dorado));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progreso-texto {
+            color: var(--texto-secundario);
+            font-size: 0.9rem;
+        }
+
+        /* Informe */
+        .informe-contenedor {
+            display: none;
+            background: var(--fondo-tarjeta);
+            border: 1px solid var(--dorado);
+            border-radius: var(--radio-borde);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .informe-contenedor.visible {
+            display: block;
+        }
+
+        .informe-titulo {
+            color: var(--dorado);
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .informe-subtitulo {
+            color: var(--texto-secundario);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--borde);
+        }
+
+        .ficha-bibliografica {
+            background: var(--fondo-input);
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .ficha-bibliografica h3 {
+            color: var(--dorado-claro);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .ficha-item {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .ficha-item strong {
+            color: var(--texto-secundario);
+            min-width: 100px;
+        }
+
+        .calificacion-estrellas {
+            color: var(--dorado);
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .seccion-informe {
+            margin-bottom: 1.5rem;
+        }
+
+        .seccion-informe h3 {
+            color: var(--dorado-claro);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 1px solid var(--borde);
+        }
+
+        .seccion-informe p {
+            color: var(--texto-claro);
+            line-height: 1.7;
+        }
+
+        /* Error */
+        .error-mensaje {
+            display: none;
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid var(--error);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--error);
+        }
+
+        .error-mensaje.visible {
+            display: block;
+        }
+
+        /* Responsivo */
+        @media (max-width: 600px) {
+            .contenedor-principal {
+                padding: 1rem;
+            }
+
+            .encabezado h1 {
+                font-size: 1.6rem;
+            }
+
+            .campo-fila {
+                grid-template-columns: 1fr;
+            }
+
+            .formulario-tarjeta, .informe-contenedor, .progreso-contenedor {
+                padding: 1.2rem;
+            }
+
+            .plan-precio {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor-principal">
+        <!-- Encabezado -->
+        <div class="encabezado">
+            <h1>Informes de Lectura</h1>
+            <p>Reseñas profesionales y análisis literarios generados por inteligencia artificial para autores, editores y lectores exigentes.</p>
+        </div>
+
+        <!-- Planes -->
+        <div class="planes-contenedor">
+            <div class="plan-tarjeta">
+                <div class="plan-nombre">Plan Básico</div>
+                <div class="plan-precio">Gratis <small>/ prueba</small></div>
+                <div class="plan-descripcion">1 informe breve de cortesía para que pruebes el servicio</div>
+            </div>
+            <div class="plan-tarjeta destacado">
+                <div class="plan-nombre">Plan Autor</div>
+                <div class="plan-precio">$4.99 <small>/ informe</small></div>
+                <div class="plan-descripcion">Informes estándar o detallados por unidad. Ideal para autores independientes.</div>
+            </div>
+            <div class="plan-tarjeta">
+                <div class="plan-nombre">Plan Editorial</div>
+                <div class="plan-precio">$29.99 <small>/ mes</small></div>
+                <div class="plan-descripcion">Informes ilimitados en todos los formatos. Para editoriales y profesionales.</div>
+            </div>
+        </div>
+
+        <!-- Error -->
+        <div id="error-mensaje" class="error-mensaje"></div>
+
+        <!-- Formulario -->
+        <div id="formulario-seccion" class="formulario-tarjeta">
+            <h2>Solicitar Informe de Lectura</h2>
+            <form id="formulario-informe" novalidate>
+                <div class="campo-fila">
+                    <div class="campo-grupo">
+                        <label for="titulo">Título del libro <span class="requerido">*</span></label>
+                        <input type="text" id="titulo" name="titulo_libro" placeholder="Ej: Cien años de soledad" required>
+                    </div>
+                    <div class="campo-grupo">
+                        <label for="autor">Autor <span class="requerido">*</span></label>
+                        <input type="text" id="autor" name="autor" placeholder="Ej: Gabriel García Márquez" required>
+                    </div>
+                </div>
+
+                <div class="campo-fila">
+                    <div class="campo-grupo">
+                        <label for="genero">Género literario</label>
+                        <select id="genero" name="genero">
+                            <option value="">— Seleccionar —</option>
+                            <option value="Novela">Novela</option>
+                            <option value="Cuento">Cuento</option>
+                            <option value="Poesía">Poesía</option>
+                            <option value="Ensayo">Ensayo</option>
+                            <option value="Crónica">Crónica</option>
+                            <option value="Teatro">Teatro</option>
+                            <option value="Biografía">Biografía</option>
+                            <option value="Ciencia ficción">Ciencia ficción</option>
+                            <option value="Fantasía">Fantasía</option>
+                            <option value="Terror">Terror</option>
+                            <option value="Histórica">Histórica</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="campo-grupo">
+                        <label for="formato">Formato del informe <span class="requerido">*</span></label>
+                        <select id="formato" name="formato" required>
+                            <option value="breve">Breve (~500 palabras)</option>
+                            <option value="estandar" selected>Estándar (~1500 palabras)</option>
+                            <option value="detallado">Detallado (~3000+ palabras)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="campo-grupo">
+                    <label for="notas">Notas o áreas de enfoque</label>
+                    <textarea id="notas" name="notas_usuario" placeholder="¿Hay algo específico que te interese del análisis? Ej: enfoque en el estilo narrativo, comparación con otras obras del autor, análisis del contexto histórico..."></textarea>
+                </div>
+
+                <div class="campo-grupo">
+                    <label for="email">Correo electrónico <span class="requerido">*</span></label>
+                    <input type="email" id="email" name="email_usuario" placeholder="tu@correo.com" required>
+                </div>
+
+                <button type="submit" class="boton-enviar" id="boton-enviar">
+                    Generar Informe de Lectura
+                </button>
+            </form>
+        </div>
+
+        <!-- Progreso -->
+        <div id="progreso-seccion" class="progreso-contenedor">
+            <div class="progreso-titulo">Generando tu informe de lectura...</div>
+            <div class="barra-progreso">
+                <div id="barra-relleno" class="barra-progreso-relleno"></div>
+            </div>
+            <div id="progreso-texto" class="progreso-texto">Iniciando...</div>
+        </div>
+
+        <!-- Informe -->
+        <div id="informe-seccion" class="informe-contenedor"></div>
+    </div>
+
+    <script>
+    (function() {
+        'use strict';
+
+        const API_BASE = 'https://api.ecdotica.com/api/v1/informes-lectura';
+        const INTERVALO_CONSULTA_MS = 3000;
+
+        const formulario = document.getElementById('formulario-informe');
+        const botonEnviar = document.getElementById('boton-enviar');
+        const progresoSeccion = document.getElementById('progreso-seccion');
+        const barraRelleno = document.getElementById('barra-relleno');
+        const progresoTexto = document.getElementById('progreso-texto');
+        const informeSeccion = document.getElementById('informe-seccion');
+        const errorMensaje = document.getElementById('error-mensaje');
+        const formularioSeccion = document.getElementById('formulario-seccion');
+
+        function mostrarError(mensaje) {
+            errorMensaje.textContent = mensaje;
+            errorMensaje.classList.add('visible');
+            setTimeout(function() {
+                errorMensaje.classList.remove('visible');
+            }, 8000);
+        }
+
+        function ocultarError() {
+            errorMensaje.classList.remove('visible');
+        }
+
+        function validarFormulario() {
+            var titulo = document.getElementById('titulo').value.trim();
+            var autor = document.getElementById('autor').value.trim();
+            var email = document.getElementById('email').value.trim();
+
+            if (!titulo) {
+                mostrarError('Por favor ingresa el título del libro.');
+                return false;
+            }
+            if (!autor) {
+                mostrarError('Por favor ingresa el nombre del autor.');
+                return false;
+            }
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                mostrarError('Por favor ingresa un correo electrónico válido.');
+                return false;
+            }
+            return true;
+        }
+
+        function generarEstrellas(calificacion) {
+            var llena = '★';
+            var vacia = '☆';
+            return llena.repeat(calificacion) + vacia.repeat(5 - calificacion);
+        }
+
+        function renderizarInforme(datos) {
+            var informe = datos.informe;
+            var ficha = informe.ficha_bibliografica;
+
+            var html = '';
+            html += '<div class="informe-titulo">' + escapeHtml(ficha.titulo) + '</div>';
+            html += '<div class="informe-subtitulo">por ' + escapeHtml(ficha.autor) + '</div>';
+
+            // Calificación
+            html += '<div class="calificacion-estrellas">' + generarEstrellas(informe.calificacion) + '</div>';
+            html += '<p style="color:var(--texto-secundario);margin-bottom:1.5rem;font-size:0.9rem">';
+            html += escapeHtml(informe.justificacion_calificacion) + '</p>';
+
+            // Ficha bibliográfica
+            html += '<div class="ficha-bibliografica">';
+            html += '<h3>Ficha Bibliográfica</h3>';
+            if (ficha.genero) {
+                html += '<div class="ficha-item"><strong>Género:</strong><span>' + escapeHtml(ficha.genero) + '</span></div>';
+            }
+            if (ficha.anio_publicacion) {
+                html += '<div class="ficha-item"><strong>Año:</strong><span>' + escapeHtml(ficha.anio_publicacion) + '</span></div>';
+            }
+            if (ficha.editorial) {
+                html += '<div class="ficha-item"><strong>Editorial:</strong><span>' + escapeHtml(ficha.editorial) + '</span></div>';
+            }
+            if (ficha.idioma) {
+                html += '<div class="ficha-item"><strong>Idioma:</strong><span>' + escapeHtml(ficha.idioma) + '</span></div>';
+            }
+            if (ficha.paginas_estimadas) {
+                html += '<div class="ficha-item"><strong>Páginas:</strong><span>' + escapeHtml(ficha.paginas_estimadas) + '</span></div>';
+            }
+            html += '</div>';
+
+            // Secciones
+            var secciones = [
+                {titulo: 'Sinopsis', contenido: informe.sinopsis},
+                {titulo: 'Análisis Temático', contenido: informe.analisis_tematico},
+                {titulo: 'Estilo y Estructura', contenido: informe.analisis_estilo_estructura},
+                {titulo: 'Contexto Literario', contenido: informe.contexto_literario},
+                {titulo: 'Valoración Crítica', contenido: informe.valoracion_critica},
+                {titulo: 'Público Recomendado', contenido: informe.publico_recomendado}
+            ];
+
+            for (var i = 0; i < secciones.length; i++) {
+                html += '<div class="seccion-informe">';
+                html += '<h3>' + secciones[i].titulo + '</h3>';
+                html += '<p>' + escapeHtml(secciones[i].contenido) + '</p>';
+                html += '</div>';
+            }
+
+            // Metadata
+            html += '<div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--borde);';
+            html += 'color:var(--texto-secundario);font-size:0.8rem;text-align:center">';
+            html += 'Informe generado por Ecdótica IA — Formato: ' + escapeHtml(datos.formato_solicitado);
+            html += '</div>';
+
+            informeSeccion.innerHTML = html;
+            informeSeccion.classList.add('visible');
+        }
+
+        function escapeHtml(texto) {
+            if (!texto) return '';
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(texto));
+            return div.innerHTML;
+        }
+
+        async function consultarEstado(trabajoId) {
+            try {
+                var respuesta = await fetch(API_BASE + '/' + trabajoId, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!respuesta.ok) {
+                    throw new Error('Error al consultar el estado: ' + respuesta.status);
+                }
+
+                var datos = await respuesta.json();
+
+                barraRelleno.style.width = datos.progreso + '%';
+                progresoTexto.textContent = datos.mensaje || ('Progreso: ' + datos.progreso + '%');
+
+                if (datos.estado === 'completado') {
+                    await obtenerInforme(trabajoId);
+                    return;
+                }
+
+                if (datos.estado === 'fallido') {
+                    progresoSeccion.classList.remove('visible');
+                    mostrarError('La generación del informe falló: ' + (datos.mensaje || 'Error desconocido'));
+                    formularioSeccion.style.display = '';
+                    botonEnviar.disabled = false;
+                    botonEnviar.textContent = 'Generar Informe de Lectura';
+                    return;
+                }
+
+                setTimeout(function() { consultarEstado(trabajoId); }, INTERVALO_CONSULTA_MS);
+
+            } catch (err) {
+                progresoSeccion.classList.remove('visible');
+                mostrarError('Error de conexión al consultar el estado. Inténtalo nuevamente.');
+                formularioSeccion.style.display = '';
+                botonEnviar.disabled = false;
+                botonEnviar.textContent = 'Generar Informe de Lectura';
+            }
+        }
+
+        async function obtenerInforme(trabajoId) {
+            try {
+                var respuesta = await fetch(API_BASE + '/' + trabajoId + '/report', {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!respuesta.ok) {
+                    throw new Error('Error al obtener el informe: ' + respuesta.status);
+                }
+
+                var datos = await respuesta.json();
+
+                progresoSeccion.classList.remove('visible');
+                renderizarInforme(datos);
+
+            } catch (err) {
+                progresoSeccion.classList.remove('visible');
+                mostrarError('Error al obtener el informe generado. Inténtalo nuevamente.');
+                formularioSeccion.style.display = '';
+                botonEnviar.disabled = false;
+                botonEnviar.textContent = 'Generar Informe de Lectura';
+            }
+        }
+
+        formulario.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            ocultarError();
+
+            if (!validarFormulario()) return;
+
+            botonEnviar.disabled = true;
+            botonEnviar.textContent = 'Enviando solicitud...';
+
+            var datos = {
+                titulo_libro: document.getElementById('titulo').value.trim(),
+                autor: document.getElementById('autor').value.trim(),
+                formato: document.getElementById('formato').value,
+                email_usuario: document.getElementById('email').value.trim()
+            };
+
+            var genero = document.getElementById('genero').value;
+            if (genero) datos.genero = genero;
+
+            var notas = document.getElementById('notas').value.trim();
+            if (notas) datos.notas_usuario = notas;
+
+            try {
+                var respuesta = await fetch(API_BASE, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(datos)
+                });
+
+                if (!respuesta.ok) {
+                    var errorData = await respuesta.json().catch(function() { return {}; });
+                    throw new Error(errorData.detail || 'Error del servidor: ' + respuesta.status);
+                }
+
+                var resultado = await respuesta.json();
+
+                // Mostrar progreso
+                formularioSeccion.style.display = 'none';
+                progresoSeccion.classList.add('visible');
+                barraRelleno.style.width = resultado.progreso + '%';
+                progresoTexto.textContent = resultado.mensaje || 'Solicitud recibida...';
+
+                // Iniciar polling
+                setTimeout(function() { consultarEstado(resultado.trabajo_id); }, INTERVALO_CONSULTA_MS);
+
+            } catch (err) {
+                mostrarError(err.message || 'Error al enviar la solicitud. Verifica tu conexión e inténtalo nuevamente.');
+                botonEnviar.disabled = false;
+                botonEnviar.textContent = 'Generar Informe de Lectura';
+            }
+        });
+    })();
+    </script>
+</body>
+</html>

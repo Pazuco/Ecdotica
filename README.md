@@ -24,6 +24,11 @@ ecdotica.com (WordPress/WooCommerce en EasyWP)
 ## Estructura del repositorio
 
 ```
+├── api/                    # Módulos de la API FastAPI (Railway)
+│   ├── models/            # Modelos Pydantic
+│   ├── prompts/           # Prompts de IA
+│   ├── routers/           # Routers/endpoints FastAPI
+│   └── services/          # Lógica de negocio
 ├── src/                    # Analizador de manuscritos (Python)
 │   ├── cuento/            # Reglas por género literario
 │   ├── novela/
@@ -35,8 +40,10 @@ ecdotica.com (WordPress/WooCommerce en EasyWP)
 │   ├── ecdotica-adsense.js
 │   ├── ecdoticon.js
 │   └── index.js           # ecdotica-api
+├── wordpress/              # Páginas web embebibles en WordPress
 ├── wordpress-plugin/       # Plugin WP "Ecdotica AI Assistant"
 ├── tests/                  # Tests unitarios
+├── docs/                   # Documentación de módulos
 ├── wrangler.toml          # Config Worker ecdotica-api
 ├── wrangler.ecdotica-adsense.toml
 ├── wrangler.ecdoticon.toml
@@ -67,6 +74,17 @@ npx wrangler deploy --config wrangler.toml
 
 ### Railway (backend API)
 Autodeploy desde commits al repo en Railway.
+
+## Informes de Lectura (Nuevo)
+
+Módulo de generación de reseñas y análisis literarios profesionales con IA. Permite a usuarios solicitar informes de lectura estructurados para cualquier libro.
+
+- **API:** `POST /api/v1/informes-lectura` — Solicitar informe (async)
+- **API:** `GET /api/v1/informes-lectura/{id}` — Consultar estado
+- **API:** `GET /api/v1/informes-lectura/{id}/report` — Obtener informe completo
+- **Frontend:** `wordpress/informes-lectura.html` — Página embebible en WordPress
+
+Documentación completa: [`docs/INFORMES_DE_LECTURA.md`](docs/INFORMES_DE_LECTURA.md)
 
 ## Licencia
 
