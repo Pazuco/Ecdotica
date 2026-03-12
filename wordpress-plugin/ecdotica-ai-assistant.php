@@ -418,14 +418,14 @@ function ecdotica_render_admin_page() {
             });
         });
     });
-    </s
-		
-		    // FIX: Convertir valores con formato "X/10" a porcentaje "X*10%"
+    </script>
+    <script>
+    // FIX: Convertir valores con formato "X/10" a porcentaje "X*10%"
     function fixPlagiarismPercentage() {
         // Buscar todos los elementos de texto en el modal de resultados
         const modal = document.querySelector('#ecdotica-results');
         if (!modal) return;
-        
+
         // Recorrer todos los nodos de texto y reemplazar "X/10" por "X*10%"
         const walker = document.createTreeWalker(
             modal,
@@ -433,7 +433,7 @@ function ecdotica_render_admin_page() {
             null,
             false
         );
-        
+
         let node;
         while (node = walker.nextNode()) {
             if (node.textContent && node.textContent.match(/\d+(?:\.\d+)?\/10/)) {
@@ -443,7 +443,7 @@ function ecdotica_render_admin_page() {
             }
         }
     }
-    
+
     // Ejecutar el fix después de que se muestren los resultados
     // Usar MutationObserver para detectar cuando el modal se muestra
     const observer = new MutationObserver(function(mutations) {
@@ -456,90 +456,91 @@ function ecdotica_render_admin_page() {
             }
         });
     });
-    
+
     // Observar cambios en el modal
     const resultsModal = document.querySelector('#ecdotica-results');
     if (resultsModal) {
         observer.observe(resultsModal, { attributes: true });
-    }cript>
+    }
+    </script>
+    <?php }
+
+// ============================================
+// AJAX HANDLERS PARA REPORTES
+// ============================================
+
 // AJAX handler para generar reporte Word
 add_action('wp_ajax_ecdotica_generate_word_report', 'ecdotica_generate_word_report_ajax');
 
 function ecdotica_generate_word_report_ajax() {
     check_ajax_referer('ecdotica_word_nonce', 'nonce');
-    
+
     if (!isset($_POST['analysis_data'])) {
         wp_send_json_error(['message' => 'No hay datos de análisis']);
     }
-    
+
     $analysis_data = json_decode(stripslashes($_POST['analysis_data']), true);
-    
+
     if (!$analysis_data) {
         wp_send_json_error(['message' => 'Datos de análisis inválidos']);
     }
-    
+
     // Incluir el generador de reportes
     require_once plugin_dir_path(__FILE__) . 'word-report-generator.php';
-    
+
     // Generar el reporte
     $generator = new Ecdotica_Word_Report_Generator();
     $filepath = $generator->generate_report($analysis_data);
-    
+
     if (is_wp_error($filepath)) {
         wp_send_json_error(['message' => $filepath->get_error_message()]);
     }
-    
+
     // Obtener URL de descarga
     $upload_dir = wp_upload_dir();
     $upload_url = $upload_dir['baseurl'];
     $relative_path = str_replace($upload_dir['basedir'], '', $filepath);
     $download_url = $upload_url . $relative_path;
-    
+
     wp_send_json_success([
         'download_url' => $download_url,
         'filename' => basename($filepath)
     ]);
 }
 
-// ============================================
-// AJAX HANDLERS PARA REPORTES
-// ============================================
-
 // AJAX handler para generar reporte PDF
 add_action('wp_ajax_ecdotica_generate_pdf_report', 'ecdotica_generate_pdf_report_ajax');
 
 function ecdotica_generate_pdf_report_ajax() {
     check_ajax_referer('ecdotica_pdf_nonce', 'nonce');
-    
+
     if (!isset($_POST['analysis_data'])) {
         wp_send_json_error(['message' => 'No hay datos de análisis']);
     }
-    
+
     $analysis_data = json_decode(stripslashes($_POST['analysis_data']), true);
-    
+
     if (!$analysis_data) {
         wp_send_json_error(['message' => 'Datos de análisis inválidos']);
     }
-    
+
     // Incluir el generador de reportes PDF
     require_once plugin_dir_path(__FILE__) . 'pdf-report-generator.php';
-    
+
     // Generar el reporte PDF
     $generator = new Ecdotica_PDF_Report_Generator();
     $filepath = $generator->generate_report($analysis_data);
-    
+
     if (is_wp_error($filepath)) {
         wp_send_json_error(['message' => $filepath->get_error_message()]);
     }
-    
+
     // Obtener URL de descarga
     $download_url = $generator->get_download_url($filepath);
-    
+
     wp_send_json_success([
         'download_url' => $download_url,
         'filename' => basename($filepath),
         'message' => 'Reporte PDF generado exitosamente'
     ]);
 }
-
-    <?php }
