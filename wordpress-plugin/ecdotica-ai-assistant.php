@@ -384,7 +384,7 @@ function ecdotica_render_admin_page() {
             e.preventDefault();
             
             var formData = new FormData(this);
-            formData.append('action', 'ecdotica_ajax_analyze_rag');
+            formData.append('action', 'ecdotica_analyze_rag');
             
             $('#ecdotica-submit-btn').prop('disabled', true).text('Analizando...');
             $('#ecdotica-results').hide();
