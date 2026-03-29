@@ -17,12 +17,25 @@ def contar_capitulos(texto):
 
 
 def calcular_legibilidad(texto):
-    """Fórmula simple para español (puede mejorarse con SpaCy o herramientas especializadas)."""
-    palabras = contar_palabras(texto)
-    oraciones = len(re.findall(r'[.!?]', texto))
-    if palabras == 0 or oraciones == 0:
+    """Calcula el índice de legibilidad para español usando textstat (Flesch Reading Ease).
+
+    Requiere: pip install textstat
+    Si textstat no está instalado, usa fórmula de respaldo basada en Flesch-Kincaid.
+    Retorna un valor entre 0 y 100.
+    """
+    if not texto or not texto.strip():
         return 100
-    return max(0, min(100, 206.835 - 1.015 * (palabras / oraciones) - 84.6 * (len(texto) / palabras)))
+    try:
+        import textstat
+        textstat.set_lang("es")
+        resultado = textstat.flesch_reading_ease(texto)
+        return max(0, min(100, resultado))
+    except ImportError:
+        palabras = contar_palabras(texto)
+        oraciones = len(re.findall(r'[.!?]', texto))
+        if palabras == 0 or oraciones == 0:
+            return 100
+        return max(0, min(100, 206.835 - 1.015 * (palabras / oraciones) - 84.6 * (len(texto) / palabras)))
 
 
 def detectar_errores(texto):
@@ -59,7 +72,7 @@ def analizar_manuscrito(path):
         from archivos import ProcesadorDeArchivos
         texto = ProcesadorDeArchivos().extraer_texto(path)
         if texto in ("PyPDF2 no instalado", "python-docx no instalado"):
-            dep = "PyPDF2" if ext == '.pdf' else "python-docx"
+            dep = "pypdf" if ext == '.pdf' else "python-docx"
             raise ImportError(
                 f"Dependencia faltante para archivos {ext}: ejecuta 'pip install {dep}'"
             )

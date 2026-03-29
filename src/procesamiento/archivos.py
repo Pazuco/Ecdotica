@@ -27,12 +27,12 @@ class ProcesadorDeArchivos:
             raise ValueError("Tipo de archivo no soportado")
     
     def _extraer_pdf(self, ruta):
-        # Requiere PyPDF2
+        # Requiere pypdf (reemplazo oficial de PyPDF2)
         texto = ""
         try:
-            import PyPDF2
+            import pypdf
             with open(ruta, 'rb') as f:
-                lector = PyPDF2.PdfReader(f)
+                lector = pypdf.PdfReader(f)
                 for pagina in lector.pages:
                     texto += pagina.extract_text() or ""
         except ImportError:

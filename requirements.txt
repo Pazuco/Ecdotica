@@ -5,8 +5,11 @@ spacy>=3.0.0
 # Revisión ortográfica y gramatical
 language-tool-python>=2.7.0
 
+# Legibilidad de texto
+textstat>=0.7.0
+
 # Procesamiento de documentos
-PyPDF2>=3.0.0
+pypdf>=3.0.0
 python-docx>=0.8.11
 
 # Testing
