@@ -89,8 +89,8 @@ Regex-based text statistics. No external dependencies.
 | `contar_palabras(texto)` | Word count via `\w+` regex |
 | `contar_capitulos(texto)` | Detects `Capítulo` at start of line (case-insensitive, handles accented í) |
 | `calcular_legibilidad(texto)` | Flesch-Kincaid adaptation for Spanish |
-| `detectar_errores(texto)` | **Stub** — currently hardcoded to return `5`. Replace with LanguageTool integration. |
-| `analizar_manuscrito(path)` | Reads a `.txt` file and returns a `stats` dict |
+| `detectar_errores(texto)` | Detects errors via LanguageTool (`es`). Degrades to `0` if not installed. |
+| `analizar_manuscrito(path)` | Reads `.txt`, `.pdf` or `.docx` and returns a `stats` dict. Raises `ValueError` for unsupported formats, `ImportError` for missing optional deps. |
 
 **Stats dict schema:**
 ```python

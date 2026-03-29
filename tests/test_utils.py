@@ -88,3 +88,53 @@ class TestAnalizarManuscrito:
     def test_archivo_no_encontrado_lanza_error(self):
         with pytest.raises(FileNotFoundError):
             analizar_manuscrito("/ruta/que/no/existe.txt")
+
+
+class TestAnalizarManuscritoDocx:
+    def test_devuelve_dict_con_claves_correctas(self, tmp_path):
+        try:
+            import docx
+            doc = docx.Document()
+            doc.add_paragraph("Este es un texto de prueba en DOCX. Tiene dos oraciones.")
+            ruta = str(tmp_path / "manuscrito.docx")
+            doc.save(ruta)
+            stats = analizar_manuscrito(ruta)
+            assert 'num_palabras' in stats
+            assert 'num_capitulos' in stats
+            assert 'indice_legibilidad' in stats
+            assert 'errores_graves' in stats
+        except ImportError:
+            pytest.skip("python-docx no instalado")
+
+    def test_cuenta_palabras_correctamente(self, tmp_path):
+        try:
+            import docx
+            doc = docx.Document()
+            doc.add_paragraph("uno dos tres cuatro cinco.")
+            ruta = str(tmp_path / "manuscrito.docx")
+            doc.save(ruta)
+            stats = analizar_manuscrito(ruta)
+            assert stats['num_palabras'] == 5
+        except ImportError:
+            pytest.skip("python-docx no instalado")
+
+    def test_formato_no_soportado_lanza_valor_error(self, tmp_path):
+        archivo = tmp_path / "manuscrito.odt"
+        archivo.write_text("contenido", encoding="utf-8")
+        with pytest.raises(ValueError, match=".txt|.pdf|.docx"):
+            analizar_manuscrito(str(archivo))
+
+
+class TestAnalizarManuscritoPdf:
+    def test_devuelve_dict_con_claves_correctas(self, tmp_path):
+        try:
+            import PyPDF2
+            from reportlab.pdfgen import canvas as rl_canvas
+            ruta = str(tmp_path / "manuscrito.pdf")
+            c = rl_canvas.Canvas(ruta)
+            c.drawString(100, 750, "uno dos tres cuatro cinco.")
+            c.save()
+            stats = analizar_manuscrito(ruta)
+            assert 'num_palabras' in stats
+        except ImportError:
+            pytest.skip("PyPDF2 o reportlab no instalados")

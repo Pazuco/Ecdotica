@@ -42,9 +42,38 @@ def detectar_errores(texto):
 
 
 def analizar_manuscrito(path):
-    """Lee un archivo .txt y extrae estadísticas de análisis."""
-    with open(path, encoding='utf-8') as f:
-        texto = f.read()
+    """Lee un archivo .txt, .pdf o .docx y extrae estadísticas de análisis."""
+    import os
+    if not os.path.isfile(path):
+        raise FileNotFoundError(f"No se encontró el archivo: {path}")
+
+    ext = os.path.splitext(path)[1].lower()
+    formatos_validos = ['.txt', '.pdf', '.docx']
+
+    if ext == '.txt':
+        with open(path, encoding='utf-8') as f:
+            texto = f.read()
+    elif ext in ('.pdf', '.docx'):
+        import sys
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
+        from archivos import ProcesadorDeArchivos
+        texto = ProcesadorDeArchivos().extraer_texto(path)
+        if texto in ("PyPDF2 no instalado", "python-docx no instalado"):
+            dep = "PyPDF2" if ext == '.pdf' else "python-docx"
+            raise ImportError(
+                f"Dependencia faltante para archivos {ext}: ejecuta 'pip install {dep}'"
+            )
+        if not texto.strip():
+            raise ValueError(
+                f"No se pudo extraer texto del archivo '{path}'. "
+                "Verifique que el archivo contiene texto seleccionable."
+            )
+    else:
+        raise ValueError(
+            f"Formato '{ext}' no soportado. "
+            f"Formatos válidos: {', '.join(formatos_validos)}"
+        )
+
     stats = {
         'num_palabras': contar_palabras(texto),
         'num_capitulos': contar_capitulos(texto),
