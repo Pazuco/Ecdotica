@@ -54,6 +54,32 @@ def detectar_errores(texto):
         return 0
 
 
+def generar_sinopsis(texto, num_oraciones=3):
+    """Genera una sinopsis automática del texto usando sumy (algoritmo LSA).
+
+    Requiere: pip install sumy numpy
+    Si sumy no está instalado, retorna las primeras num_oraciones del texto como fallback.
+    Retorna cadena vacía si el texto está vacío.
+    """
+    if not texto or not texto.strip():
+        return ""
+    try:
+        import nltk
+        nltk.download('punkt', quiet=True)
+        nltk.download('punkt_tab', quiet=True)
+        from sumy.parsers.plaintext import PlaintextParser
+        from sumy.nlp.tokenizers import Tokenizer
+        from sumy.summarizers.lsa import LsaSummarizer
+        parser = PlaintextParser.from_string(texto, Tokenizer('spanish'))
+        resumidor = LsaSummarizer()
+        oraciones = resumidor(parser.document, num_oraciones)
+        return ' '.join(str(o) for o in oraciones)
+    except ImportError:
+        import re
+        oraciones = re.split(r'(?<=[.!?])\s+', texto.strip())
+        return ' '.join(oraciones[:num_oraciones])
+
+
 def analizar_manuscrito(path):
     """Lee un archivo .txt, .pdf o .docx y extrae estadísticas de análisis."""
     import os

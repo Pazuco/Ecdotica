@@ -8,6 +8,10 @@ language-tool-python>=2.7.0
 # Legibilidad de texto
 textstat>=0.7.0
 
+# Sinopsis automática
+sumy>=0.12.0
+numpy>=1.24.0
+
 # Procesamiento de documentos
 pypdf>=3.0.0
 python-docx>=0.8.11

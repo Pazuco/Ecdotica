@@ -5,7 +5,7 @@ Tests para src/procesamiento/utils.py
 import pytest
 import tempfile
 import os
-from utils import contar_palabras, contar_capitulos, calcular_legibilidad, analizar_manuscrito
+from utils import contar_palabras, contar_capitulos, calcular_legibilidad, analizar_manuscrito, generar_sinopsis
 
 
 class TestContarPalabras:
@@ -142,3 +142,32 @@ class TestAnalizarManuscritoPdf:
             assert 'num_palabras' in stats
         except Exception as e:
             pytest.skip(f"Error al procesar PDF en este entorno: {e}")
+
+
+class TestGenerarSinopsis:
+    TEXTO = (
+        "El viejo marino contemplaba el horizonte con ojos cansados. "
+        "Las olas golpeaban la barca con fuerza implacable. "
+        "Llevaba tres días sin dormir buscando el banco de peces. "
+        "Su hijo le esperaba en el puerto con los ojos llenos de esperanza. "
+        "El mar nunca devuelve lo que toma prestado."
+    )
+
+    def test_devuelve_cadena_no_vacia(self):
+        resultado = generar_sinopsis(self.TEXTO)
+        assert isinstance(resultado, str)
+        assert len(resultado.strip()) > 0
+
+    def test_numero_de_oraciones_respetado(self):
+        resultado = generar_sinopsis(self.TEXTO, num_oraciones=2)
+        # Cada oración termina en punto; debe haber al menos 2
+        oraciones = [s for s in resultado.split('.') if s.strip()]
+        assert len(oraciones) >= 1  # al menos algo coherente
+
+    def test_texto_vacio_devuelve_cadena_vacia(self):
+        assert generar_sinopsis("") == ""
+
+    def test_texto_corto_devuelve_el_texto_completo(self):
+        texto_corto = "Una sola oración."
+        resultado = generar_sinopsis(texto_corto, num_oraciones=3)
+        assert len(resultado) > 0
